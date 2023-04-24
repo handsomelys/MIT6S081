@@ -54,6 +54,8 @@ struct dinode {
 #define DIRSIZ 14
 
 struct dirent {
+  // defind the file name and the length of file name
+  // DIRSIZ means the max length of file
   ushort inum;
   char name[DIRSIZ];
 };

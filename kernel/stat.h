@@ -2,6 +2,7 @@
 #define T_FILE    2   // File
 #define T_DEVICE  3   // Device
 
+// the message of relative files
 struct stat {
   int dev;     // File system's disk device
   uint ino;    // Inode number

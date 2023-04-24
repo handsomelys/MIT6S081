@@ -4,7 +4,7 @@
 #include "kernel/fs.h"
 
 char*
-fmtname(char *path)
+fmtname(char *path) //  format output the name of the file (without the parent dir)
 {
   static char buf[DIRSIZ+1];
   char *p;
@@ -27,10 +27,11 @@ ls(char *path)
 {
   char buf[512], *p;
   int fd;
-  struct dirent de;
-  struct stat st;
+  struct dirent de; // contains the files' inode number and file name.
+  struct stat st; // contains the store files' base informations. eg. inode block number, file type, quote link number, file size...
 
-  if((fd = open(path, 0)) < 0){
+// open returns the fd if success, else return -1
+  if((fd = open(path, 0)) < 0){ //  open the file pointed by the fd, return the opened file's fd
     fprintf(2, "ls: cannot open %s\n", path);
     return;
   }
@@ -48,17 +49,19 @@ ls(char *path)
 
   case T_DIR:
     if(strlen(path) + 1 + DIRSIZ + 1 > sizeof buf){
+      // if path/filename/ length out of the buffer's size
       printf("ls: path too long\n");
       break;
     }
     strcpy(buf, path);
-    p = buf+strlen(buf);
-    *p++ = '/';
+    p = buf+strlen(buf);  // the p point to the  path's tail of the buffer, and ready to add
+    *p++ = '/'; //  add the / after the directory
     while(read(fd, &de, sizeof(de)) == sizeof(de)){
-      if(de.inum == 0)
+      //  read de once from directory till the read fail
+      if(de.inum == 0)  // de.inum == 0, means the file didn't save. it is a invalid file
         continue;
-      memmove(p, de.name, DIRSIZ);
-      p[DIRSIZ] = 0;
+      memmove(p, de.name, DIRSIZ);  //  write DIRSIZ content from de.name to p
+      p[DIRSIZ] = 0;  //  write 0 in the end stands for the string ending
       if(stat(buf, &st) < 0){
         printf("ls: cannot stat %s\n", buf);
         continue;
