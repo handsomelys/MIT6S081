@@ -272,6 +272,7 @@ growproc(int n)
 int
 fork(void)
 {
+  // *np stands for the child process
   int i, pid;
   struct proc *np;
   struct proc *p = myproc();
@@ -288,7 +289,7 @@ fork(void)
     return -1;
   }
   np->sz = p->sz;
-
+  np->mask = p->mask; // lab2 implements.
   // copy saved user registers.
   *(np->trapframe) = *(p->trapframe);
 
@@ -653,4 +654,19 @@ procdump(void)
     printf("%d %s %s", p->pid, state, p->name);
     printf("\n");
   }
+}
+
+uint64
+get_process_num(void) {
+  // imitate from the allocproc()
+  struct proc *p;
+  uint64 count = 0;
+  for (p = proc; p < &proc[NPROC]; p++) {
+    // acquire(&p->lock);
+    if (p->state != UNUSED) {
+      count++;
+    }
+    // release(&p->lock);
+  }
+  return count;
 }
